@@ -1,0 +1,32 @@
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.csproj.AssemblyReference.cache
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.AssemblyInfoInputs.cache
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.AssemblyInfo.cs
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.csproj.CoreCompileInputs.cache
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.exe
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.deps.json
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.runtimeconfig.json
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.runtimeconfig.dev.json
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.dll
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\ref\VoxelVerse Server.dll
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.pdb
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.dll
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\ref\VoxelVerse Server.dll
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.pdb
+C:\Users\Milan\Documents\Unity Projects\VoxelVerse Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.genruntimeconfig.cache
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.csproj.AssemblyReference.cache
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.AssemblyInfoInputs.cache
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.AssemblyInfo.cs
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.csproj.CoreCompileInputs.cache
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.dll
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\ref\VoxelVerse Server.dll
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.pdb
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.exe
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.deps.json
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.runtimeconfig.json
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.runtimeconfig.dev.json
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.dll
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\ref\VoxelVerse Server.dll
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\bin\Debug\net5.0\VoxelVerse Server.pdb
+C:\Users\Milan\Desktop\VoxelVerse\Server\VoxelVerse Server\obj\Debug\net5.0\VoxelVerse Server.genruntimeconfig.cache

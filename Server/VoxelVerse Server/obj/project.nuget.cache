@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "ahiw/pNpXxcRBRc/J3V5+cz9t25VIcCUql82e6u7rLjUBYcnjp+6DWaZDIjav/cS+m47RwOjnOsSpogSJRJ3xA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Milan\\Desktop\\VoxelVerse\\Server\\VoxelVerse Server\\VoxelVerse Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Milan\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.13\\microsoft.netcore.app.host.win-x64.5.0.13.nupkg.sha512",
+    "C:\\Users\\Milan\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\5.0.0\\microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\Milan\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\5.0.0\\microsoft.windowsdesktop.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\Milan\\.nuget\\packages\\microsoft.netcore.app.ref\\5.0.0\\microsoft.netcore.app.ref.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

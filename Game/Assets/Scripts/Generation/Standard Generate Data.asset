@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c2f7c588963f14a999c704873faaa3, type: 3}
+  m_Name: Standard Generate Data
+  m_EditorClassIdentifier: 
+  Biomes:
+  - Name: Plains
+    Rocks:
+    - Name: Basic Rock
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 20
+      Variants:
+      - {fileID: 11400000, guid: e27e6dc3d324edd49b86d6c7bd8ca1fa, type: 2}
+      - {fileID: 11400000, guid: 257e01b7b9af3f84ebe805b690fb2a99, type: 2}
+      - {fileID: 11400000, guid: b91697f2de5f12f4bae3dd3b5c188f0e, type: 2}
+    Trees:
+    - Name: Oak Test Tree
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 10
+      Variants:
+      - {fileID: 11400000, guid: 14ee5b2cbe836504c946e1cff87bcd0d, type: 2}
+    - Name: Birch Tree
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 10
+      Variants:
+      - {fileID: 11400000, guid: ece915fe51529464d901b9dfc349ef07, type: 2}
+    Foliage: []
+    Structures: []
+    MinTemperature: 0
+    MaxTemperature: 0.25
+  - Name: Forest
+    Rocks:
+    - Name: Basic Rock
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 20
+      Variants:
+      - {fileID: 11400000, guid: e27e6dc3d324edd49b86d6c7bd8ca1fa, type: 2}
+      - {fileID: 11400000, guid: 257e01b7b9af3f84ebe805b690fb2a99, type: 2}
+      - {fileID: 11400000, guid: b91697f2de5f12f4bae3dd3b5c188f0e, type: 2}
+    Trees:
+    - Name: Spruce Tree
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 10
+      Variants:
+      - {fileID: 11400000, guid: 4bca26d5bf202e74bb3fa51d67087e6f, type: 2}
+    Foliage: []
+    Structures: []
+    MinTemperature: 0.25
+    MaxTemperature: 0.5
+  - Name: Taiga
+    Rocks:
+    - Name: Basic Rock
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 20
+      Variants:
+      - {fileID: 11400000, guid: e27e6dc3d324edd49b86d6c7bd8ca1fa, type: 2}
+      - {fileID: 11400000, guid: 257e01b7b9af3f84ebe805b690fb2a99, type: 2}
+      - {fileID: 11400000, guid: b91697f2de5f12f4bae3dd3b5c188f0e, type: 2}
+    Trees:
+    - Name: Spruce Tree
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 10
+      Variants:
+      - {fileID: 11400000, guid: 4bca26d5bf202e74bb3fa51d67087e6f, type: 2}
+    Foliage: []
+    Structures: []
+    MinTemperature: 0.5
+    MaxTemperature: 0.75
+  - Name: Rainforest
+    Rocks:
+    - Name: Basic Rock
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 20
+      Variants:
+      - {fileID: 11400000, guid: e27e6dc3d324edd49b86d6c7bd8ca1fa, type: 2}
+      - {fileID: 11400000, guid: 257e01b7b9af3f84ebe805b690fb2a99, type: 2}
+      - {fileID: 11400000, guid: b91697f2de5f12f4bae3dd3b5c188f0e, type: 2}
+    Trees:
+    - Name: Jungle Tree 1
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 60
+      Variants:
+      - {fileID: 11400000, guid: 8be8550391bd62d41942840372d317d7, type: 2}
+    - Name: Jungle Tree 2
+      MinAmount: 1
+      MaxAmount: 1
+      chance: 30
+      Variants:
+      - {fileID: 11400000, guid: affa6aee50f2eea48966724ff93ef501, type: 2}
+    Foliage: []
+    Structures: []
+    MinTemperature: 0.75
+    MaxTemperature: 1
+  TemperatureScale: 5
+  TestWorld: 0
+  Heightmaps:
+  - Noise:
+    - scale: 10
+      height: 10
+      octaves: 1
+      persistance: 0.623
+      lacunarity: 1
+  - Noise:
+    - scale: 50
+      height: 50
+      octaves: 2
+      persistance: 0.623
+      lacunarity: 1
+  BiomeNoise:
+    scale: 5
+    height: 1
+    octaves: 1
+    persistance: 0.6
+    lacunarity: 2

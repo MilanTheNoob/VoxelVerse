@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "b9fbb35a-7b64-4c1b-9091-d5fba97af9b4": {
+      "ProjectGuid": "b9fbb35a-7b64-4c1b-9091-d5fba97af9b4",
+      "DisplayName": "VoxelVerse Server",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}

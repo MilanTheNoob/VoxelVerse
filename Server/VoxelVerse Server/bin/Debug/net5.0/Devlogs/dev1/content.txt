@@ -1,0 +1,24 @@
+Hello everyone! This is the very first devlog, I have been working on this prototype for only 2 weeks and is very, VERY far away from the wanted end result.
+
+What I have done
+
+1. Basic terrain generation with trees & rock structures being generated.
+2. Inventory system that allows you to break blocks, craft more blocks using them & then placing them back in the world. I am unsure if this feature will stay the same or be kept in the game since people might perceive the game just as a Minecraft clone because of this.
+3. A simple storage system where you can craft a barrel using two wood blocks and place it & interact with it.
+4. Simple saving system that saves your settings & world data separately. So in the future you will be able to play different worlds like Minecraft. (Right now there is only world you can play)
+5. And some basic eye candy. This includes: UI animations, basic fog, very smooth 8x8 textures & CubeWorld inspired UI 
+
+And some known bugs with this first version:
+
+1. When breaking a block on a chunk border the face on the border will fail to render, even allowing you to get underneath the world
+2. If you break blocks straight down you will eventually fall underneath the map as there is no unbreakable layer of blocks underneath the terrain
+3. The saving system is generally quite unstable, with corruption being caused when the game isn't closed correctly. And it is quite slow when it does save.
+
+That is currently it for development these past two weeks, recently I have 'acquired' Covid so development slowed down considerably. In regards for the next devlog these are my intentions:
+
+1. Improve the LOD system for the terrain generation, and optimise all the super messy code for generation to improve the render distance
+2. Add some more variation to the terrain, have biomes be more distinct & have more variants to trees & rocks.
+3. Fix some of the existing bugs, and add some more for the next devlog (:
+4. Improve the feel of the game, this includes: audio, more UI animations, animations when generating, terrain gradient, etc
+
+Thats it for the first (hopefully historical at some point) devlog. Keep tuned in with the community to see more!
