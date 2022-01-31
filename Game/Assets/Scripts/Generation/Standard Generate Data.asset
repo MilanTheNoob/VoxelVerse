@@ -109,23 +109,28 @@ MonoBehaviour:
     Structures: []
     MinTemperature: 0.75
     MaxTemperature: 1
-  TemperatureScale: 5
+  BiomeNoise:
+    scale: 30
+    height: 1
+    octaves: 1
+    persistance: 0.6
+    lacunarity: 2
   TestWorld: 0
   Heightmaps:
   - Noise:
     - scale: 10
-      height: 10
+      height: 3
       octaves: 1
       persistance: 0.623
       lacunarity: 1
   - Noise:
-    - scale: 50
-      height: 50
+    - scale: 300
+      height: 100
       octaves: 2
       persistance: 0.623
       lacunarity: 1
-  BiomeNoise:
-    scale: 5
+  HeightmapsNoise:
+    scale: 50
     height: 1
     octaves: 1
     persistance: 0.6

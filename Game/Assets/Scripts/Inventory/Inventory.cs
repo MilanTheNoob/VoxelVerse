@@ -50,14 +50,14 @@ public class Inventory : MonoBehaviour
                     int chunkPosX = Mathf.FloorToInt(point.x / 16f);
                     int chunkPosZ = Mathf.FloorToInt(point.z / 16f);
 
-                    TerrainChunk chunk = TerrainGenerator.chunks[new Vector2Int(chunkPosX, chunkPosZ)];
+                    TerrainChunk chunk = TerrainGenerator.terrainChunkDictionary[new Vector2Int(chunkPosX, chunkPosZ)];
 
                     int bix = Mathf.FloorToInt(point.x) - chunkPosX + 1;
                     int biy = Mathf.FloorToInt(point.y);
                     int biz = Mathf.FloorToInt(point.z) - chunkPosZ + 1;
 
-                    chunk.blocks[bix, biy, biz] = Slots[activeHotbar].Item.blockReference;
-                    chunk.BuildMesh();
+                    chunk.heightMap[bix, biy, biz] = Slots[activeHotbar].Item.blockReference;
+                    chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
 
                     Slots[activeHotbar].Quantity--;
                     Slots[activeHotbar].OnItemChange?.Invoke();

@@ -25,7 +25,7 @@ public static class Noise
     }
 	*/
 
-	public static float[,] GenerateHeightMap(BiomeNoiseClass[] settings, NoiseSettings biomeMap, Vector2 sampleCentre, int seed)
+	public static HeightmapData GenerateHeightMap(BiomeNoiseClass[] settings, NoiseSettings biomeMap, Vector2 sampleCentre, int seed)
 	{
 		float[,] heightMap = new float[18, 18];
         sampleCentre.x -= 14;sampleCentre.y -= 14;
@@ -67,7 +67,7 @@ public static class Noise
             }
         }
 
-        return heightMap;
+        return new HeightmapData( heightMap);
 	}
 
     static float biome_weight(float biomes_count, float rand_num, float biome)
@@ -292,4 +292,10 @@ public class NoiseSettings
 		lacunarity = Mathf.Max(lacunarity, 1);
 		persistance = Mathf.Clamp01(persistance);
 	}
+}
+
+public struct HeightmapData
+{
+    public float[,] Heightmap;
+    public HeightmapData(float[,] heightmap) { Heightmap = heightmap; }
 }

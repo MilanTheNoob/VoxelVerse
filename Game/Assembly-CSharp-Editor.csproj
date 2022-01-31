@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{5544F79C-5306-909F-C855-53D6959D5DFD}</ProjectGuid>
+    <ProjectGuid>{196F3426-96BD-E564-A156-57572DB80A48}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
@@ -53,13 +53,10 @@
     <UnityVersion>2020.3.26f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\FlatKit\Demos\Common\Scripts\Motion\Editor\LinearMotionEditor.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Editor\ModifierUtility.cs" />
-    <Compile Include="Assets\FlatKit\Shaders\Editor\StylizedSurfaceEditor.cs" />
-    <Compile Include="Assets\FlatKit\Shaders\GradientSkybox\Editor\GradientSkyboxEditor.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Editor\ProceduralImageEditorUtility.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Editor\FreeModifierEditor.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Editor\ProceduralImageEditor.cs" />
@@ -290,9 +287,6 @@
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.26f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.26f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.26f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
@@ -310,6 +304,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0\Runtime\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
@@ -710,15 +707,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{079D398E-4AFC-CD7E-7881-F923D075EBD1}</Project>
+      <Project>{D8888F6A-ABE1-C49B-1A38-F65A81021668}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
     </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{12F44184-A422-5F27-22E6-507969043F15}</Project>
+      <Project>{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="Assembly-CSharp-Editor-firstpass.csproj">
-      <Project>{2292066C-03A4-5733-4636-43653C20A180}</Project>
+      <Project>{075A8A06-755D-8732-2919-A4C453AA8ED0}</Project>
       <Name>Assembly-CSharp-Editor-firstpass</Name>
     </ProjectReference>
   </ItemGroup>

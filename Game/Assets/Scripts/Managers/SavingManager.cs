@@ -49,7 +49,7 @@ public class SavingManager : MonoBehaviour
 
         ActiveSaveID = saveID;
 
-        TerrainGenerator.chunks.Clear();
+        TerrainGenerator.terrainChunkDictionary.Clear();
         //TerrainGenerator.instance.FirstChunkUpdate();
     }
 }

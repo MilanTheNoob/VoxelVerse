@@ -40,7 +40,7 @@ public class StructureCreator : MonoBehaviour
                 int chunkPosX = Mathf.FloorToInt(point.x / 16f);
                 int chunkPosZ = Mathf.FloorToInt(point.z / 16f);
 
-                TerrainChunk chunk = TerrainGenerator.chunks[new Vector2Int(chunkPosX, chunkPosZ)];
+                TerrainChunk chunk = TerrainGenerator.terrainChunkDictionary[new Vector2Int(chunkPosX, chunkPosZ)];
 
                 int bix = Mathf.FloorToInt(point.x) - (chunkPosX * 16) + 1;
                 int biy = Mathf.FloorToInt(point.y);
@@ -52,8 +52,8 @@ public class StructureCreator : MonoBehaviour
                     {
                         if (blocks[i].Pos == pointRounded)
                         {
-                            chunk.blocks[bix, biy, biz] = BlockType.Air;
-                            chunk.BuildMesh();
+                            chunk.heightMap[bix, biy, biz] = BlockType.Air;
+                            chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
 
                             blocks.RemoveAt(i);
                             break;
@@ -64,8 +64,8 @@ public class StructureCreator : MonoBehaviour
                 }
                 else if (rightClick && FlatWorldManager.CurrentBlock != BlockType.Air)
                 {
-                    chunk.blocks[bix, biy, biz] = FlatWorldManager.CurrentBlock;
-                    chunk.BuildMesh();
+                    chunk.heightMap[bix, biy, biz] = FlatWorldManager.CurrentBlock;
+                    chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
 
                     blocks.Add(new StructureBlockClass()
                     {

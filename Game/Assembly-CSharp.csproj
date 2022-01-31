@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{12F44184-A422-5F27-22E6-507969043F15}</ProjectGuid>
+    <ProjectGuid>{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -53,9 +53,6 @@
     <UnityVersion>2020.3.26f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Assets\Scripts\Crafting\CraftUIItem.cs" />
     <Compile Include="Assets\Scripts\Misc\StructureCreator.cs" />
     <Compile Include="Assets\Scripts\Inventory\FollowMouse.cs" />
@@ -70,25 +67,20 @@
     <Compile Include="Assets\Scripts\Misc\intVector2.cs" />
     <Compile Include="Assets\Scripts\Interaction\Interaction.cs" />
     <Compile Include="Assets\Scripts\Generation\ThreadedManager.cs" />
-    <Compile Include="Assets\FlatKit\Demos\Common\Scripts\Motion\CameraMouseOrbit.cs" />
     <Compile Include="Assets\Scripts\Misc\WaterChunk.cs" />
     <Compile Include="Assets\Scripts\Misc\Block.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventoryCursorController.cs" />
-    <Compile Include="Assets\FlatKit\Scripts\UvScroller.cs" />
     <Compile Include="Assets\Scripts\Movement\CharacterController.cs" />
     <Compile Include="Assets\Scripts\Inventory\Inventory.cs" />
     <Compile Include="Assets\Scripts\Movement\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Misc\DOFController.cs" />
-    <Compile Include="Assets\FlatKit\[Render Pipeline] Built-in\ImageEffects\Scripts\OutlineImageEffect.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Scripts\Attributes\ModifierID.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventorySlot.cs" />
     <Compile Include="Assets\Scripts\Generation\ChunkObject.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Scripts\Modifiers\RoundModifier.cs" />
-    <Compile Include="Assets\FlatKit\[Render Pipeline] Built-in\ImageEffects\Scripts\FogImageEffect.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventorySlotUIController.cs" />
     <Compile Include="Assets\Scripts\Generation\SimplexNoise.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Scripts\ProceduralImageModifier.cs" />
-    <Compile Include="Assets\FlatKit\Demos\Common\Scripts\Motion\LinearMotion.cs" />
     <Compile Include="Assets\Scripts\Misc\MathLibrary.cs" />
     <Compile Include="Assets\Misc\ProceduralUIImage\Scripts\Modifiers\OnlyOneEdgeModifier.cs" />
     <Compile Include="Assets\Scripts\Managers\SavingManager.cs" />
@@ -111,16 +103,11 @@
   <ItemGroup>
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
-    <None Include="Assets\FlatKit\[Render Pipeline] Built-in\ImageEffects\Resources\OutlinePlus.shader" />
-    <None Include="Assets\FlatKit\Shaders\StylizedSurface\DustyroomTerrainSplatmapCommon.cginc" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
-    <None Include="Assets\FlatKit\Shaders\GradientSkybox\GradientSkybox.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
-    <None Include="Assets\FlatKit\Shaders\StylizedSurface\DustyroomStylizedLighting.cginc" />
     <None Include="Assets\Misc\ProceduralUIImage\Resources\Shaders\ProceduralImageRuntime.shader" />
-    <None Include="Assets\FlatKit\Shaders\StylizedSurface\StylizedSurfaceOutline.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
@@ -128,19 +115,13 @@
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
-    <None Include="Assets\FlatKit\[Render Pipeline] Built-in\ImageEffects\Resources\FogPlus.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\Misc\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-    <None Include="Assets\FlatKit\[READ ME].txt" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
-    <None Include="Assets\FlatKit\Shaders\StylizedSurface\StylizedSurfaceCutout.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
-    <None Include="Assets\FlatKit\Shaders\StylizedSurface\StylizedSurface.shader" />
-    <None Include="Assets\FlatKit\Shaders\LightPlane.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
-    <None Include="Assets\FlatKit\Shaders\StylizedSurface\Terrain.shader" />
     <None Include="Assets\Misc\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>
   <ItemGroup>
@@ -756,7 +737,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{079D398E-4AFC-CD7E-7881-F923D075EBD1}</Project>
+      <Project>{D8888F6A-ABE1-C49B-1A38-F65A81021668}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
     </ProjectReference>
   </ItemGroup>

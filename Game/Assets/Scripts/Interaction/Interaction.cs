@@ -69,7 +69,7 @@ public class Interaction : MonoBehaviour
                     int chunkPosX = Mathf.FloorToInt(point.x / 16f);
                     int chunkPosZ = Mathf.FloorToInt(point.z / 16f);
 
-                    TerrainChunk chunk = TerrainGenerator.chunks[new Vector2Int(chunkPosX, chunkPosZ)];
+                    TerrainChunk chunk = TerrainGenerator.terrainChunkDictionary[new Vector2Int(chunkPosX, chunkPosZ)];
 
                     int bix = Mathf.FloorToInt(point.x) - (chunkPosX * 16) + 1;
                     int biy = Mathf.FloorToInt(point.y);
@@ -82,7 +82,7 @@ public class Interaction : MonoBehaviour
                         breaking = false;
 
                         StartCoroutine(IWaitBlock());
-                        StartCoroutine(IBreakBlock(Block.blocks[chunk.blocks[bix, biy, biz]], lookingBlock, new Vector3Int(bix + (chunkPosX * 16), biy, biz + (chunkPosZ * 16))
+                        StartCoroutine(IBreakBlock(Block.blocks[chunk.heightMap[bix, biy, biz]], lookingBlock, new Vector3Int(bix + (chunkPosX * 16), biy, biz + (chunkPosZ * 16))
                             , chunk, hitInfo.point));
                     }
                     else if (rightClick)
@@ -97,19 +97,19 @@ public class Interaction : MonoBehaviour
                         int dlix = dix - (chunkPosX * 16);
                         int dliz = diz - (chunkPosZ * 16);
 
-                        if (chunk.blocks[dlix, diy, dliz] != BlockType.Air) interactableBlock = Block.blocks[chunk.blocks[dlix, diy, dliz]].isInteractable;
+                        if (chunk.heightMap[dlix, diy, dliz] != BlockType.Air) interactableBlock = Block.blocks[chunk.heightMap[dlix, diy, dliz]].isInteractable;
 
                         if (interactableBlock)
                         {
-                            Block.blocks[chunk.blocks[dlix, diy, dliz]].actionOnUse(new Vector3Int(dix, diy, diz));
+                            Block.blocks[chunk.heightMap[dlix, diy, dliz]].actionOnUse(new Vector3Int(dix, diy, diz));
                         }
                         else if (Inventory.Slots[Inventory.activeHotbar].Quantity > 0 && allowBlockBreak)
                         {
                             StartCoroutine(IWaitBlock());
                             SavingManager.ActiveSave.Chunks[new Vector2Int(chunkPosX, chunkPosZ)][bix, biy, biz] = Inventory.Slots[Inventory.activeHotbar].Item.blockReference;
 
-                            chunk.blocks[bix, biy, biz] = Inventory.Slots[Inventory.activeHotbar].Item.blockReference;
-                            chunk.BuildMesh();
+                            chunk.heightMap[bix, biy, biz] = Inventory.Slots[Inventory.activeHotbar].Item.blockReference;
+                            chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
 
                             Inventory.Slots[Inventory.activeHotbar].Quantity--;
                             Inventory.Slots[Inventory.activeHotbar].OnItemChange?.Invoke();
@@ -179,7 +179,7 @@ public class Interaction : MonoBehaviour
 
         if (maxIters > 0)
         {
-            Inventory.AddItem(Block.blocks[chunk.blocks[blockPos.x, blockPos.y, blockPos.z]], 1);
+            Inventory.AddItem(Block.blocks[chunk.heightMap[blockPos.x, blockPos.y, blockPos.z]], 1);
 
             /*
             Block oldBlock = Block.blocks[chunk.blocks[blockPos.x, blockPos.y, blockPos.z]];
@@ -193,10 +193,10 @@ public class Interaction : MonoBehaviour
             item.GetComponent<MeshRenderer>().material.color = oldBlock.ItemColor;
             item.AddComponent<Interactable>().Item = oldBlock;
             */
-            chunk.blocks[blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
-            chunk.BuildMesh();
+            chunk.heightMap[blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
+            chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
 
-            SavingManager.ActiveSave.Chunks[chunk.Coord][blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
+            SavingManager.ActiveSave.Chunks[chunk.coord][blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
 
         }
     }

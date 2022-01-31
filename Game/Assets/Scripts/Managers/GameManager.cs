@@ -96,6 +96,7 @@ public class GameManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        Application.targetFrameRate = 30;
     }
 
     IEnumerator DisableFading() 
@@ -390,7 +391,7 @@ public class GameManager : MonoBehaviour
         MouseLook.isInverted = SavingManager.GameSave.mouseInverted;
 
         PP.SetActive(SavingManager.GameSave.usePP);
-        Application.targetFrameRate = SavingManager.GameSave.targetFPS;
+        Application.targetFrameRate = 30;
 
         //TerrainGenerator.renderDst = SavingManager.GameSave.renderDst;
 
