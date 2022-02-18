@@ -2,19 +2,14 @@
 
 public class MouseLook : MonoBehaviour
 {
-    [Tooltip("How fast the cursor moves in response to mouse lateral (x-axis) movement.")]
-    public float lateralSensitivity = 2.0f;
-    [Tooltip("How fast the cursor moves in response to mouse vertical (y-axis) movement.")]
-    public float verticalSensitivity = 2.0f;
-    [Tooltip("Approximately the time (in seconds) it will take to reach the target.\n")]
-    public float smoothTime = 5.0f;
-    [Tooltip("The minimum pitch angle (in degrees).")]
-    public float minPitchAngle = -90.0f;
-    [Tooltip("The maximum pitch angle (in degrees).")]
-    public float maxPitchAngle = 90.0f;
+    [Tooltip("The minimum pitch angle (in degrees).")] public float minPitchAngle = -90.0f;
+    [Tooltip("The maximum pitch angle (in degrees).")] public float maxPitchAngle = 90.0f;
 
-    protected bool _isCursorLocked = true;
     [HideInInspector] public bool isInverted = false;
+    [HideInInspector] public float smoothTime = 5.0f;
+
+    [HideInInspector] public float lateralSensitivity = 2.0f;
+    [HideInInspector] public float verticalSensitivity = 2.0f;
 
     protected Quaternion characterTargetRotation;
     protected Quaternion cameraTargetRotation;

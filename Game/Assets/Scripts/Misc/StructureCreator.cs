@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// A moderately simple class responsible for creating structures in the flat world
+/// NOTE : Needs rework due to difficult movement
+/// </summary>
 public class StructureCreator : MonoBehaviour
 {
     public LayerMask groundLayer;
     public TextMeshProUGUI coordText;
 
-    bool firstPlaced = false;
-
     public List<StructureBlockClass> blocks = new List<StructureBlockClass>();
-
-    void Start()
-    {
-        
-    }
 
     void Update()
     {
@@ -25,7 +19,7 @@ public class StructureCreator : MonoBehaviour
         bool rightClick = Input.GetMouseButtonDown(1);
 
         RaycastHit hitInfo;
-        Vector3 point = new Vector3();
+        Vector3 point;
 
         if (Physics.Raycast(transform.position, transform.forward, out hitInfo, 8, groundLayer))
         {
@@ -40,7 +34,7 @@ public class StructureCreator : MonoBehaviour
                 int chunkPosX = Mathf.FloorToInt(point.x / 16f);
                 int chunkPosZ = Mathf.FloorToInt(point.z / 16f);
 
-                TerrainChunk chunk = TerrainGenerator.terrainChunkDictionary[new Vector2Int(chunkPosX, chunkPosZ)];
+                TerrainChunk chunk = TerrainGenerator.Chunks[new Vector2Int(chunkPosX, chunkPosZ)];
 
                 int bix = Mathf.FloorToInt(point.x) - (chunkPosX * 16) + 1;
                 int biy = Mathf.FloorToInt(point.y);
@@ -59,8 +53,6 @@ public class StructureCreator : MonoBehaviour
                             break;
                         }
                     }
-
-                    if (blocks.Count == 0) { firstPlaced = false; }
                 }
                 else if (rightClick && FlatWorldManager.CurrentBlock != BlockType.Air)
                 {

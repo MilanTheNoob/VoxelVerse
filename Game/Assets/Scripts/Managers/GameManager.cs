@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using System;
-using System.IO;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Rendering.PostProcessing;
 
+/// <summary>
+/// Is the main script that is responsible for all basic features of the game
+/// NOTE TO SELF : Right now it is currently a dumping ground for random features that need to seperated into their own scripts.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     public static GameVersionEnum GameVersion = GameVersionEnum.Test_1_0_0;
@@ -81,6 +81,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        SavingManager.Load();
+
         FadingPanel.gameObject.SetActive(true);
         StartCoroutine(DisableFading());
 
@@ -96,7 +98,6 @@ public class GameManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        Application.targetFrameRate = 30;
     }
 
     IEnumerator DisableFading() 
@@ -110,7 +111,6 @@ public class GameManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f);
-
         for (int i = 0; i < StorageInvSlots.Length; i++) StorageInvSlots[i].SetInventorySlot(Inventory.Slots[i]);
 
         SetupSettings();
@@ -133,14 +133,18 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        // Responsible for opening & closing the menu
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             if (GameState == GameStateEnum.Storage)
             {
                 CloseStorageMenu();
+                AudioManager.instance.CloseMenu.Play();
             }
             else if (!paused && (GameState == GameStateEnum.Inventory || GameState == GameStateEnum.InGame))
             {
+                AudioManager.instance.OpenMenu.Play();
+
                 paused = true;
                 Player.pause = true;
 
@@ -171,12 +175,14 @@ public class GameManager : MonoBehaviour
             else if (GameState == GameStateEnum.Inventory || GameState == GameStateEnum.InGame)
             {
                 CloseInventory();
+                AudioManager.instance.CloseMenu.Play();
             }
 
             Cursor.visible = paused;
             Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
         }
 
+        // Deals with escaping menus and opening the pause menu
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             switch (GameState)
@@ -186,6 +192,7 @@ public class GameManager : MonoBehaviour
                     Player.pause = false;
 
                     GameState = GameStateEnum.InGame;
+                    AudioManager.instance.CloseMenu.Play();
 
                     for (int i = 0; i < Inventory.instance.HotbarSlots.Length; i++)
                     {
@@ -200,10 +207,10 @@ public class GameManager : MonoBehaviour
 
                     ClosePauseMenu();
                     break;
-                case GameStateEnum.InGame: OpenPauseMenu(); break;
-                case GameStateEnum.Inventory: CloseInventory(); break;
-                case GameStateEnum.SettingsMenu: SettingsMenu.gameObject.SetActive(true); OpenPauseMenu(); break;
-                case GameStateEnum.Storage: CloseStorageMenu(); break;
+                case GameStateEnum.InGame: AudioManager.instance.OpenMenu.Play(); OpenPauseMenu(); break;
+                case GameStateEnum.Inventory: AudioManager.instance.CloseMenu.Play(); CloseInventory(); break;
+                case GameStateEnum.SettingsMenu: AudioManager.instance.CloseMenu.Play(); SettingsMenu.gameObject.SetActive(true); OpenPauseMenu(); break;
+                case GameStateEnum.Storage: AudioManager.instance.CloseMenu.Play(); CloseStorageMenu(); break;
             }
         }
     }
@@ -212,9 +219,18 @@ public class GameManager : MonoBehaviour
 
     #region Pause Actions
 
+    /// <summary>
+    /// Resumes the game, only works when in the pause menu
+    /// </summary>
     public void Resume() { ClosePauseMenu(); }
-    public void Quit() { SavingManager.SaveGame(); Application.Quit(); }
+    /// <summary>
+    /// Will save and close the game
+    /// </summary>
+    public void Quit() { Application.Quit(); }
 
+    /// <summary>
+    /// Opens the settings menus (expects to be open from the pause menu only)
+    /// </summary>
     public void Settings() { StartCoroutine(ISettings()); }
     public IEnumerator ISettings()
     {
@@ -253,8 +269,8 @@ public class GameManager : MonoBehaviour
         LeanTween.alpha(PauseText, 0, 0);
         LeanTween.alpha(PauseText, 1f, 0.3f).setDelay(0.3f);
 
-        PauseText.anchoredPosition = new Vector2(PauseText.anchoredPosition.x, 400);
-        LeanTween.moveY(PauseText, 325, 0.3f).setEaseInCubic().setDelay(0.1f);
+        PauseText.anchoredPosition = new Vector2(PauseText.anchoredPosition.x, 350);
+        LeanTween.moveY(PauseText, 212, 0.3f).setEaseInCubic().setDelay(0.1f);
 
         PauseWarning.rotation = Quaternion.identity;
         LeanTween.rotateZ(PauseWarning.gameObject, -40, 0.2f).setDelay(0.1f).setOnComplete(() => {
@@ -272,6 +288,28 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
+
+    public void ClosePauseMenuToGame()
+    {
+        paused = false;
+        Player.pause = false;
+
+        GameState = GameStateEnum.InGame;
+
+        for (int i = 0; i < Inventory.instance.HotbarSlots.Length; i++)
+        {
+            RectTransform slot = Inventory.instance.HotbarSlots[i].GetComponent<RectTransform>();
+
+            LeanTween.alpha(slot, 1f, 1f).setDelay(i * 0.1f + 0.1f);
+            LeanTween.moveLocalY(slot.gameObject, 0, 0.5f).setDelay(i * 0.1f + 0.1f).setEaseInExpo();
+        }
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        ClosePauseMenu();
+    }
+
     void ClosePauseMenu()
     {
         LeanTween.alpha(PauseMenu, 0, 0.3f).setOnComplete(() => { PauseMenu.gameObject.SetActive(false); });
@@ -327,7 +365,8 @@ public class GameManager : MonoBehaviour
         ComingSoonUI.anchoredPosition = new Vector2(ComingSoonUI.anchoredPosition.x, ComingSoonUI.anchoredPosition.y);
         LeanTween.moveY(ComingSoonUI, -300, 0.5f).setEaseInCubic().setOnComplete(() => { ShiftMenu.gameObject.SetActive(false); });
 
-        InventoryCursorController.instance.ForceHideCursor();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void OpenStorageMenu()
@@ -370,6 +409,19 @@ public class GameManager : MonoBehaviour
 
     #region Misc
 
+    public static void WriteText(TextMeshProUGUI textHolder, string text, float duration) { instance.StartCoroutine(IWriteText(textHolder, text, duration)); }
+    public static IEnumerator IWriteText(TextMeshProUGUI textHolder, string text, float duration)
+    {
+        textHolder.text = "";
+        float timePerChar = duration / text.Length;
+
+        for (int i = 0; i < text.Length; i++)
+        {
+            textHolder.text = textHolder.text + text[i];
+            yield return new WaitForSeconds(timePerChar);
+        }
+    }
+
     void SetupSettings()
     {
         MouseSpeedField.text = SavingManager.GameSave.mouseSpeed.ToString();
@@ -391,7 +443,7 @@ public class GameManager : MonoBehaviour
         MouseLook.isInverted = SavingManager.GameSave.mouseInverted;
 
         PP.SetActive(SavingManager.GameSave.usePP);
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = SavingManager.GameSave.targetFPS;
 
         //TerrainGenerator.renderDst = SavingManager.GameSave.renderDst;
 
@@ -474,13 +526,13 @@ public class GameManager : MonoBehaviour
         FOVField.onEndEdit.AddListener((string value) =>
         {
             bool parsedInput = int.TryParse(value, out int fValue);
-            if (!parsedInput)
+            if (!parsedInput || fValue < 10 || fValue > 150)
             {
                 StartCoroutine(ITempText(FOVField, "Invalid!", SavingManager.GameSave.fov.ToString()));
             }
             else
             {
-               // FindObjectOfType<Camera>().fieldOfView = fValue;
+                FindObjectOfType<Camera>().fieldOfView = fValue;
                 SavingManager.GameSave.fov = fValue;
             }
         });

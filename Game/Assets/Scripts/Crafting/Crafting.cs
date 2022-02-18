@@ -1,7 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
+/// <summary>
+/// The crafting script that deals with all crafting related features in Adventure mode
+/// </summary>
 public class Crafting : MonoBehaviour
 {
     #region Singleton
@@ -9,15 +12,15 @@ public class Crafting : MonoBehaviour
     void Awake() { instance = this; }
     #endregion
 
-    public GameObject ContentHolder;
-    public GameObject CraftUIPrefab;
+    [Header("The gameObject that holds the UI for the recipes")] public GameObject ContentHolder;
+    [Header("The UI Object that displays a recipe")] public GameObject CraftUIPrefab;
 
-    void Start()
-    {
-        for (int i = 0; i < Inventory.instance.InvSlots.Length; i++) { Inventory.Slots[i].OnItemChange += UpdateRecipes; }
-    }
+    void Start() { for (int i = 0; i < Inventory.instance.InvSlots.Length; i++) { Inventory.Slots[i].OnItemChange += UpdateRecipes; } }
 
-    void UpdateRecipes()
+    /// <summary>
+    /// Updates all the available recipes to the player
+    /// </summary>
+    public void UpdateRecipes()
     {
         foreach (Transform child in ContentHolder.transform) { Destroy(child.gameObject); }
 
@@ -31,6 +34,11 @@ public class Crafting : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if the provided recipe can actually be crafted by the player
+    /// </summary>
+    /// <param name="craft">The crafting recipe</param>
+    /// <returns>The boolean returning if the player can craft the recipe</returns>
     public bool CanCraft(Craft craft)
     {
         bool canCraft = false;
@@ -41,7 +49,7 @@ public class Crafting : MonoBehaviour
 
             for (int j = 0; j < Inventory.instance.InvSlots.Length; j++)
             {
-                try
+                if (Inventory.Slots[j].Item != null)
                 {
                     if (Inventory.Slots[j].Item.blockReference == craft.Input[i].Item)
                     {
@@ -49,7 +57,6 @@ public class Crafting : MonoBehaviour
                         if (itemCount >= craft.Input[i].Count) { canCraft = true; break; } else { canCraft = false; }
                     }
                 }
-                catch { return false; }
             }
 
             if (!canCraft) return false;
@@ -58,6 +65,11 @@ public class Crafting : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Crafts an item by removing the inputs from the player and giving them the outputs
+    /// NOTE : The function does not check if the player has the necessary items for performance reasons
+    /// </summary>
+    /// <param name="craft">The recipe to craft? I guess</param>
     public static void CraftItems(Craft craft)
     {
         for (int i = 0; i < craft.Input.Length; i++)
@@ -78,14 +90,13 @@ public class Crafting : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < craft.Output.Length; i++)
-        {
-            Inventory.AddItem(Block.blocks[craft.Output[i].Item], craft.Output[i].Count);
-        }
-
+        for (int i = 0; i < craft.Output.Length; i++) Inventory.AddItem(Block.blocks[craft.Output[i].Item], craft.Output[i].Count);
         instance.UpdateRecipes();
     }
 
+    /// <summary>
+    /// List of current crafting recipes in the entire game
+    /// </summary>
     public static Craft[] Crafts = new Craft[]
     {
         new Craft(new CraftItem[] { new CraftItem(BlockType.OakLeaves, 2) }, new CraftItem[] { new CraftItem(BlockType.Oak, 1) }),

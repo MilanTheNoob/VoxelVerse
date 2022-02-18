@@ -2,128 +2,143 @@
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// The scriptable object responsible for all major terrain generation features
+/// </summary>
 [CreateAssetMenu()]
 public class GenerateData : ScriptableObject
 {
-    public BiomeClass[] Biomes;
-    public NoiseSettings BiomeNoise;
+    [Header("The biomes relating to the structures, trees, etc")] public BiomeClass[] Biomes;
+    [Header("The noise map that determines the biomes above ^")] public NoiseSettings BiomeNoise;
 
-    [Space]
+    [Space, Header("The heightmap biomes")] public BiomeNoiseClass[] Heightmaps;
+    [Header("The noise map the determines the heightmap biomes above")] public NoiseSettings HeightmapsNoise;
 
-    public bool TestWorld;
-    public BiomeNoiseClass[] Heightmaps;
-    public NoiseSettings HeightmapsNoise;
+    [Space, Header("Is this object used for the test world?")] public bool TestWorld;
 
+    [HideInInspector] public NoiseSettings VaryingNoise = new NoiseSettings()
+    { scale = 30, height = 1, octaves = 1, persistance = 0.6f, lacunarity = 2f };
+
+    /// <summary>
+    /// Returns a 3D heightmap of blocks using a random num generator and coordinates
+    /// </summary>
+    /// <param name="coord">The coordinates of the chunk</param>
+    /// <param name="rand">The random number generator</param>
+    /// <returns>The 3D map of blocks</returns>
     public BlockType[,,] GenerateChunk(Vector2Int coord, System.Random rand)
     {
-        Vector2Int sampleCentre = coord * 16;
+        Vector2Int sampleCenter = coord * 16;
 
-        float[,] heightmap = Noise.GenerateHeightMap(Heightmaps, HeightmapsNoise, new Vector2(sampleCentre.x, sampleCentre.y), 0).Heightmap;
+        float[,] map = Noise.GenerateHeightMap(Heightmaps, HeightmapsNoise, sampleCenter, 0).Heightmap;
         BlockType[,,] blocks = new BlockType[18, 255, 18];
 
-        for (int x = 0; x < 18; x++) for (int z = 0; z < 18; z++) for (int y = 0; y <= Mathf.CeilToInt(heightmap[x, z]); y++)
-                {
-                    if (TestWorld)
-                    {
-                        if (x == 0 && z == 0) blocks[x, y, z] = BlockType.Dirt;
-                        else { blocks[x, y, z] = BlockType.Spacer; }
-                    }
-                    else
-                    {
-                        float choose = Mathf.PerlinNoise((sampleCentre.x + x) / 10, (sampleCentre.y + z) / 10);
-
-                        if (choose < 0.2f) { blocks[x, y, z] = BlockType.Stone; }
-                        else if (choose < 0.8f) { blocks[x, y, z] = BlockType.Grass; }
-                        else { blocks[x, y, z] = BlockType.Dirt; }
-                    }
-                }
-
-        float temperature = Noise.SingleNoise(BiomeNoise, 0, coord.x, coord.y);
-
-        int biome = 0;
-        for (int i = 0; i < Biomes.Length; i++)
+        for (int x = 0; x < 18; x++)
         {
-            if (temperature > Biomes[i].MinTemperature && temperature <= Biomes[i].MaxTemperature)
+            for (int z = 0; z < 18; z++)
             {
-                biome = i;
-                break;
+                int height = Mathf.CeilToInt(map[x, z]);
+                for (int y = 0; y <= height; y++) { blocks[x, y, z] = BlockType.Grass; }
             }
         }
 
+        float temp = Noise.SingleNoise(BiomeNoise, 0, coord.x, coord.y);
+        int biome = 0;
+
+        for (int i = 0; i < Biomes.Length; i++)
+            if (temp > Biomes[i].MinTemp && temp <= Biomes[i].MaxTemp) { biome = i; break; }
+
         if (!TestWorld)
         {
-            GenerateStructures(sampleCentre, coord, Biomes[biome].Trees, heightmap, ref blocks, rand);
-            GenerateStructures(sampleCentre, coord, Biomes[biome].Rocks, heightmap, ref blocks, rand);
+            Structures(coord, Biomes[biome].Trees, map, ref blocks, rand);
+            Structures(coord, Biomes[biome].Rocks, map, ref blocks, rand);
+        }
+
+        if (TerrainGenerator.ChunkChanges.ContainsKey(coord))
+        {
+            List<StructureBlockClass> blocksA = TerrainGenerator.ChunkChanges[coord];
+            for (int i = 0; i < blocksA.Count; i++) blocks[blocksA[i].Pos.x, blocksA[i].Pos.y, blocksA[i].Pos.z] = blocksA[i].Block;
         }
 
         return blocks;
     }
 
-    public void GenerateStructures(Vector2Int sampleCenter, Vector2Int coord, List<StructureClass> structures, float[,] heightmap, ref BlockType[,,] blocks, System.Random random)
+    public void Structures(Vector2Int coord, List<StructureClass> structs, float[,] heightmap, ref BlockType[,,] blocks, System.Random random)
     {
-        List<Vector2Int> affectedChunks = new List<Vector2Int>();
+        ThreadedManager.ExecuteOnMainThread(() =>
+            { 
+            });
+        Dictionary<Vector2Int, List<StructureBlockClass>> existingChanges = new Dictionary<Vector2Int, List<StructureBlockClass>>();
+        Dictionary<Vector2Int, List<StructureBlockClass>> newChanges = new Dictionary<Vector2Int, List<StructureBlockClass>>();
 
-        for (int i = 0; i < structures.Count; i++)
+        for (int i = 0; i < structs.Count; i++)
         {
-            if (random.Next(0, 100) < structures[i].chance)
+            if (random.Next(0, 100) < structs[i].chance)
             {
-                for (int j = 0; j < random.Next(structures[i].MinAmount, structures[i].MaxAmount); j++)
+                for (int j = 0; j < random.Next(structs[i].MinAmount, structs[i].MaxAmount); j++)
                 {
-                    Vector3Int startPos = new Vector3Int(random.Next(0, 15), 0, random.Next(0, 15));
-                    
-                    startPos.y = (int)heightmap[startPos.x, startPos.z] + 1;
-                    startPos = TerrainGenerator.GetGlobalPos(startPos, coord);
+                    Vector3Int start = new Vector3Int(random.Next(0, 15), 0, random.Next(0, 15));
 
-                    int variant = random.Next(0, structures[i].Variants.Count);
-                    for (int m = 0; m < structures[i].Variants[variant].Blocks.Count; m++)
+                    start.y = (int)heightmap[start.x, start.z] + 1;
+                    //start = TerrainGenerator.GetGlobalPos(start, coord);
+
+                    int x = random.Next(0, structs[i].Variants.Count);
+                    for (int m = 0; m < structs[i].Variants[x].Blocks.Count; m++)
                     {
-                        Vector3Int blockPos = new Vector3Int(startPos.x + structures[i].Variants[variant].Blocks[m].Pos.x, startPos.y + 
-                            structures[i].Variants[variant].Blocks[m].Pos.y, startPos.z + structures[i].Variants[variant].Blocks[m].Pos.z);
-                        Vector2Int blockChunk = new Vector2Int(Mathf.FloorToInt(blockPos.x / 16f), Mathf.FloorToInt(blockPos.z / 16f));
+                        Vector3Int bPos = structs[i].Variants[x].Blocks[m].Pos;
+                        Vector3Int pos = new Vector3Int(start.x + bPos.x + 1, start.y + bPos.y, start.z + bPos.z + 1);
 
-                        Vector3Int chunkBlockPos = new Vector3Int(blockPos.x - (blockChunk.x * 16), blockPos.y, blockPos.z - (blockChunk.y * 16));
+                        Vector2Int blockChunk = new Vector2Int(Mathf.FloorToInt((pos.x - 1) / 16f), Mathf.FloorToInt((pos.z - 1) / 16f));
+                        Vector2Int sideChunk = blockChunk + coord;
 
-                        if (blockChunk == coord)
+                        Vector3Int localPos = new Vector3Int(pos.x - blockChunk.x * 16, pos.y, pos.z - blockChunk.y * 16);
+
+                        if (blockChunk == Vector2Int.zero) blocks[pos.x, pos.y, pos.z] = structs[i].Variants[x].Blocks[m].Block;
+                        else if (TerrainGenerator.Chunks.ContainsKey(sideChunk))
                         {
-                            blocks[chunkBlockPos.x + 1, chunkBlockPos.y, chunkBlockPos.z + 1] = structures[i].Variants[variant].Blocks[m].Block;
-                        }
-                        else if (TerrainGenerator.terrainChunkDictionary.ContainsKey(blockChunk))
-                        {
-                            if (TerrainGenerator.terrainChunkDictionary[blockChunk].lodMeshes[0].hasMesh)
+
+                            if (TerrainGenerator.Chunks[sideChunk].lodMeshes[0].hasMesh)
                             {
-                                //TerrainGenerator.terrainChunkDictionary[blockChunk].heightMap[chunkBlockPos.x + 1, chunkBlockPos.y, chunkBlockPos.z + 1] = structures[i].Variants[variant].Blocks[m].Block;
-                                if (!affectedChunks.Contains(blockChunk)) affectedChunks.Add(blockChunk);
+                                if (!existingChanges.ContainsKey(sideChunk)) { existingChanges.Add(sideChunk, new List<StructureBlockClass>()); }
+                                existingChanges[sideChunk].Add(new StructureBlockClass() { Block = structs[i].Variants[x].Blocks[m].Block, Pos = localPos });
                             }
                             else
                             {
-                                if (!TerrainGenerator.ChunkChanges.ContainsKey(blockChunk)) { TerrainGenerator.ChunkChanges.Add(blockChunk, new ChunkChangesClass()); }
-
-                                try
-                                {
-                                    TerrainGenerator.ChunkChanges[blockChunk].BlocksToChange.Add(new StructureBlockClass()
-                                    { Block = structures[i].Variants[variant].Blocks[m].Block, Pos = new Vector3Int(chunkBlockPos.x + 1, chunkBlockPos.y, chunkBlockPos.z + 1) });
-                                }
-                                catch { }
+                                if (!newChanges.ContainsKey(sideChunk)) { newChanges.Add(sideChunk, new List<StructureBlockClass>()); }
+                                newChanges[sideChunk].Add(new StructureBlockClass() { Block = structs[i].Variants[x].Blocks[m].Block, Pos = localPos });
                             }
                         }
                         else
                         {
-                            if (!TerrainGenerator.ChunkChanges.ContainsKey(blockChunk)) { TerrainGenerator.ChunkChanges.Add(blockChunk, new ChunkChangesClass()); }
-
-                            try
-                            {
-                                TerrainGenerator.ChunkChanges[blockChunk].BlocksToChange.Add(new StructureBlockClass()
-                                { Block = structures[i].Variants[variant].Blocks[m].Block, Pos = new Vector3Int(chunkBlockPos.x + 1, chunkBlockPos.y, chunkBlockPos.z + 1) });
-                            } catch { }
+                            if (!newChanges.ContainsKey(sideChunk)) { newChanges.Add(sideChunk, new List<StructureBlockClass>()); }
+                            newChanges[sideChunk].Add(new StructureBlockClass() { Block = structs[i].Variants[x].Blocks[m].Block, Pos = localPos });
                         }
-
                     }
                 }
             }
+
         }
 
-        for (int i = 0; i < affectedChunks.Count; i++) { TerrainGenerator.terrainChunkDictionary[affectedChunks[i]].lodMeshes[0].RequestMesh
-                (TerrainGenerator.terrainChunkDictionary[affectedChunks[i]].heightMap, TerrainGenerator.terrainChunkDictionary[affectedChunks[i]].coord); }
+            for (int i = 0; i < newChanges.Count; i++)
+            {
+                Vector2Int loc = newChanges.ElementAt(i).Key;
+
+                if (!TerrainGenerator.ChunkChanges.ContainsKey(loc)) { TerrainGenerator.ChunkChanges.Add(loc, new List<StructureBlockClass>()); }
+                TerrainGenerator.ChunkChanges[loc].AddRange(newChanges[loc]);
+            }
+
+            for (int i = 0; i < existingChanges.Count; i++)
+            {
+                Vector2Int loc = existingChanges.ElementAt(i).Key;
+                TerrainChunk chunk = TerrainGenerator.Chunks[loc];
+
+                for (int j = 0; j < existingChanges[loc].Count; j++)
+                {
+                    Vector3Int blockPos = existingChanges[loc][j].Pos;
+                    TerrainGenerator.Chunks[loc].heightMap[blockPos.x, blockPos.y, blockPos.z] = existingChanges[loc][j].Block;
+                }
+
+                chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
+            }
     }
 }
 
@@ -144,8 +159,8 @@ public class BiomeClass
 
     [Space]
 
-    public float MinTemperature;
-    public float MaxTemperature;
+    public float MinTemp;
+    public float MaxTemp;
 }
 
 [System.Serializable]

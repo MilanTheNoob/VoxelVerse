@@ -1,30 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// The noise class that deals with all Simplex noise
+/// </summary>
 public static class Noise
 {
-	/*
-	public static float[,] GenerateHeightMap(NoiseSettings[] settings, Vector2 sampleCentre)
-    {
-		float[,] heightMap = new float[18, 18];
-
-		for (int i = 0; i < settings.Length; i++)
-        {
-			float[,] noiseMap = GenerateNoiseMap(settings[i], sampleCentre);
-
-			for (int x = 0; x < 18; x++)
-            {
-				for (int y = 0; y < 18; y++)
-                {
-					heightMap[x, y] += noiseMap[x, y];
-                }
-            }
-        }
-
-		return heightMap;
-    }
-	*/
-
+    /// <summary>
+    /// Returns a float heightmap, standard of 18x18 using provided noise settings
+    /// </summary>
+    /// <param name="settings">The noise settings</param>
+    /// <param name="biomeMap">The noise settings that determine the biome and the noise settings to use</param>
+    /// <param name="sampleCentre">The sample center of the chunk</param>
+    /// <param name="seed">The seed used to generate</param>
+    /// <returns></returns>
 	public static HeightmapData GenerateHeightMap(BiomeNoiseClass[] settings, NoiseSettings biomeMap, Vector2 sampleCentre, int seed)
 	{
 		float[,] heightMap = new float[18, 18];
@@ -80,60 +69,6 @@ public static class Noise
         if ((biome - (float)1) / biomes_count <= rand_num && rand_num <= (biome + (float)1) / biomes_count) { return true; }
         return false;
     }
-
-
-    public static float[,] GenerateNoiseMap(NoiseSettings settings, Vector2 sampleCentre)
-	{
-		float[,] noiseMap = new float[18, 18];
-
-		System.Random prng = new System.Random(0);
-		Vector2[] octaveOffsets = new Vector2[settings.octaves];
-
-		float maxPossibleHeight = 0;
-		float amplitude = 1;
-		float frequency = 1;
-
-		for (int i = 0; i < settings.octaves; i++)
-		{
-			float offsetX = prng.Next(-100000, 100000) + sampleCentre.x;
-			float offsetY = prng.Next(-100000, 100000) - sampleCentre.y;
-			octaveOffsets[i] = new Vector2(offsetX, offsetY);
-
-			maxPossibleHeight += amplitude;
-			amplitude *= settings.persistance;
-		}
-
-
-		for (int x = 0; x < 18; x++)
-		{
-			for (int y = 0; y < 18; y++)
-			{
-
-				amplitude = 1;
-				frequency = 1;
-				float noiseHeight = 0;
-
-				for (int i = 0; i < settings.octaves; i++)
-				{
-					float sampleX = (x - 9 + octaveOffsets[i].x) / settings.scale * frequency;
-					float sampleY = (y - 9 + octaveOffsets[i].y) / settings.scale * frequency;
-
-					float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
-					noiseHeight += perlinValue * amplitude;
-
-					amplitude *= settings.persistance;
-					frequency *= settings.lacunarity;
-				}
-
-				noiseMap[x, y] = noiseHeight;
-
-				float normalizedHeight = (noiseMap[x, y] + 1) / (maxPossibleHeight / 0.9f);
-				noiseMap[x, y] = Mathf.Clamp(normalizedHeight, 0, int.MaxValue) * settings.height;
-			}
-		}
-
-		return noiseMap;
-	}
 
     static float[] gradients = new float[]
 {

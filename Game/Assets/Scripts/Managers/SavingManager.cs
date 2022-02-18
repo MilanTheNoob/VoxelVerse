@@ -1,57 +1,71 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Is responsible for saving the game
+/// </summary>
 public class SavingManager : MonoBehaviour
 {
-    public static byte ActiveSaveID;
+    public static int ActiveSaveID;
+    public static GamemodeEnum GameMode;
 
     public static GameSaveClass GameSave = new GameSaveClass();
-    public static ActiveSaveClass ActiveSave = new ActiveSaveClass();
+
+    public static AdventureSaveClass AdventureSave;
+    public static AdventureSaveClass SurvivalSave;
 
     const string GameSaveLoc = "GameData.dat";
-    const bool useSaves = false;
+    const bool useSaves = true;
 
-    void Start()
+    private void Awake()
+    {
+        transform.parent = null;
+        DontDestroyOnLoad(this);
+
+        Load();
+    }
+
+    public static void Load()
     {
         if (File.Exists(Application.persistentDataPath + "/" + GameSaveLoc) && useSaves)
         {
             GameSave.LoadFromDisk(GameSaveLoc);
-            ActiveSave.LoadFromDisk("Save" + GameSave.LastSave + ".dat");
+            Debug.Log("load");
         }
         else
         {
             GameSave.CreateNew();
-            ActiveSave.CreateNew();
-
             ActiveSaveID = 0;
         }
     }
 
-    //private void OnApplicationQuit() { SaveGame(); }
-    public static void SaveGame()
+    public static void LoadAdventureSave(int id)
     {
-        ActiveSave.SaveToDisk("Save" + ActiveSaveID + ".dat");
-        GameSave.LastSave = ActiveSaveID;
+        Debug.Log("LOAD");
+        GameSave.AdventureSaves[id].DatePlayed = DateTime.Now.ToString("MM/dd/yy");
+        ActiveSaveID = id;
 
+        AdventureSave = new AdventureSaveClass();
+        AdventureSave.LoadFromDisk("AdventureSave" + id + ".dat");
+
+        TerrainGenerator.CanGenerate = true;
+        LeanTween.alpha(MenuManager.instance.FadingPanel, 1f, 0.5f).setOnComplete(() => { SceneManager.LoadScene(1, LoadSceneMode.Single); });
+    }
+
+    void OnApplicationQuit()
+    {
+        if (AdventureSave != null) AdventureSave.SaveToDisk("AdventureSave" + ActiveSaveID + ".dat");
+        if (SurvivalSave != null) SurvivalSave.SaveToDisk("SurvivalSave" + ActiveSaveID + ".dat");
+
+        Debug.Log("save game");
         GameSave.SaveToDisk(GameSaveLoc);
     }
 
-    public static void SwitchSave(byte saveID)
-    {
-        if (!File.Exists(Application.persistentDataPath + "/Save" + saveID + ".dat")) { return; }
-
-        ActiveSave.SaveToDisk("Save" + ActiveSaveID + ".dat");
-        ActiveSave.LoadFromDisk("Save" + saveID + ".dat");
-
-        ActiveSaveID = saveID;
-
-        TerrainGenerator.terrainChunkDictionary.Clear();
-        //TerrainGenerator.instance.FirstChunkUpdate();
-    }
 }
 
 public class GameSaveClass
@@ -68,8 +82,8 @@ public class GameSaveClass
     public int renderDst;
     public bool animateChunks;
 
-    public byte LastSave;
-    public byte SavesCount;
+    public List<SaveDataClass> AdventureSaves = new List<SaveDataClass>();
+    public List<SaveDataClass> SurvivalSaves = new List<SaveDataClass>();
 
     public void CreateNew()
     {
@@ -93,8 +107,14 @@ public class GameSaveClass
 
         GameVersion = (GameVersionEnum)serializedData[pos]; pos++;
 
-        LastSave = serializedData[pos]; pos++;
-        SavesCount = serializedData[pos]; pos++;
+        AdventureSaves.Clear();
+        SurvivalSaves.Clear();
+
+        int adventureSaves = BitConverter.ToInt32(serializedData, pos); pos += 4;
+        for (int i = 0; i < adventureSaves; i++) { AdventureSaves.Add(LoadSaveData(ref serializedData, ref pos)); }
+
+        int survivalSaves = BitConverter.ToInt32(serializedData, pos); pos += 4;
+        for (int i = 0; i < survivalSaves; i++) { SurvivalSaves.Add(LoadSaveData(ref serializedData, ref pos)); }
 
         mouseSpeed = BitConverter.ToSingle(serializedData, pos); pos += 4;
         mouseSmoothing = BitConverter.ToSingle(serializedData, pos); pos += 4;
@@ -109,13 +129,59 @@ public class GameSaveClass
         animateChunks = BitConverter.ToBoolean(serializedData, pos); pos++;
     }
 
+    public SaveDataClass LoadSaveData(ref byte[] data, ref int pos)
+    {
+        Debug.Log("loaded a save data");
+        SaveDataClass save = new SaveDataClass { Index = data[pos] };
+        pos++;
+
+        int nameLength = BitConverter.ToInt32(data, pos); pos += 4;
+        save.Name = Encoding.ASCII.GetString(data, pos, nameLength); pos += nameLength;
+
+        int dateLength = BitConverter.ToInt32(data, pos); pos += 4;
+        save.DateCreated = Encoding.ASCII.GetString(data, pos, dateLength); pos += dateLength;
+
+        dateLength = BitConverter.ToInt32(data, pos); pos += 4;
+        save.DatePlayed = Encoding.ASCII.GetString(data, pos, dateLength); pos += dateLength;
+
+        int imgLength = BitConverter.ToInt32(data, pos); pos += 4;
+        /*save.Icon = Sprite.Create*/ pos += imgLength;
+
+        return save;
+    }
+
+    public void SaveSaveData(ref List<byte> data, SaveDataClass saveData)
+    {
+        data.Add(saveData.Index);
+
+        data.AddRange(BitConverter.GetBytes(saveData.Name.Length));
+        data.AddRange(Encoding.ASCII.GetBytes(saveData.Name));
+
+        data.AddRange(BitConverter.GetBytes(saveData.DateCreated.Length));
+        data.AddRange(Encoding.ASCII.GetBytes(saveData.DatePlayed));
+
+        data.AddRange(BitConverter.GetBytes(saveData.DatePlayed.Length));
+        data.AddRange(Encoding.ASCII.GetBytes(saveData.DatePlayed));
+
+        if (saveData.Icon == null) { data.AddRange(BitConverter.GetBytes(0)); }
+        else
+        {
+            byte[] dat = saveData.Icon.texture.GetRawTextureData();
+            data.AddRange(BitConverter.GetBytes(dat.Length));
+            data.AddRange(dat);
+        }
+    }
+
     public void SaveToDisk(string saveName)
     {
         List<byte> serializedData = new List<byte>();
         serializedData.Add((byte)GameVersion);
 
-        serializedData.Add(LastSave);
-        serializedData.Add(SavesCount);
+        serializedData.AddRange(BitConverter.GetBytes(AdventureSaves.Count));
+        for (int i = 0; i < AdventureSaves.Count; i++) { SaveSaveData(ref serializedData, AdventureSaves[i]); }
+
+        serializedData.AddRange(BitConverter.GetBytes(SurvivalSaves.Count));
+        for (int i = 0; i < SurvivalSaves.Count; i++) { SaveSaveData(ref serializedData, SurvivalSaves[i]); }
 
         serializedData.AddRange(BitConverter.GetBytes(mouseSpeed));
         serializedData.AddRange(BitConverter.GetBytes(mouseSmoothing));
@@ -133,11 +199,20 @@ public class GameSaveClass
     }
 }
 
-public class ActiveSaveClass
+public class SaveDataClass
 {
-    public GameVersionEnum Version;
-    public string SaveName;
+    public byte Index;
+    public string Name;
 
+    public string DateCreated;
+    public string DatePlayed;
+
+    public Sprite Icon;
+    public GameVersionEnum Version;
+}
+
+public class AdventureSaveClass
+{
     public Dictionary<Vector2Int, BlockType[,,]> Chunks = new Dictionary<Vector2Int, BlockType[,,]>();
 
     public Vector3 PlayerPos;
@@ -188,15 +263,16 @@ public class ActiveSaveClass
 
         for (int i = 0; i < Inventory.Slots.Count; i++)
         {
-            if (serializedData[pos] != 0) Inventory.Slots[i].Item = Block.blocks[(BlockType)serializedData[pos]];
+            if (serializedData[pos] != 0) { Inventory.Slots[i].Item = Block.blocks[(BlockType)serializedData[pos]]; Debug.Log(Inventory.Slots[i].Item.blockReference.ToString()); }
             Inventory.Slots[i].Quantity = serializedData[pos + 1];
 
             Inventory.Slots[i].OnItemChange?.Invoke();
             pos += 2;
         }
-
+        
         int storageCount = BitConverter.ToInt32(serializedData, pos); pos += 4;
         GameManager.Storages.Clear();
+        Debug.Log(storageCount);
 
         for (int i = 0; i < storageCount; i++)
         {
@@ -219,6 +295,11 @@ public class ActiveSaveClass
             GameManager.Storages.Add(new Vector3Int(BitConverter.ToInt32(serializedData, pos), BitConverter.ToInt32(serializedData, pos + 4),
                 BitConverter.ToInt32(serializedData, pos + 8)), storageSlots); pos += 12;
         }
+
+        TerrainGenerator.playerPosOld = new Vector2Int(Mathf.FloorToInt(
+                TerrainGenerator.Instance.viewer.position.x / 16), Mathf.FloorToInt(TerrainGenerator.Instance.viewer.position.z / 16));
+        TerrainGenerator.CanGenerate = true;
+        TerrainGenerator.UpdateVisibleChunks();
     }
 
     public void SaveToDisk(string saveName)
@@ -251,7 +332,7 @@ public class ActiveSaveClass
             }
         }
 
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < Inventory.Slots.Count; i++)
         {
             if (Inventory.Slots[i].Item == null)
             {

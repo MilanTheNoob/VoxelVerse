@@ -1,102 +1,79 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// One of the main classes responsible for player movement
+/// </summary>
 public class CharacterController : MonoBehaviour
 {
     [Header("Movement")]
-    [Tooltip("Maximum movement speed (in m/s).")]
-    public float speed = 5.0f;
-    [Tooltip("Maximum turning speed (in deg/s).")]
-    public float angularSpeed = 540.0f;
-    [Tooltip("The rate of change of velocity.")]
-    public float acceleration = 50.0f;
-    [Tooltip("The rate at which the character's slows down.")]
-    public float deceleration = 20.0f;
-    [Tooltip("Affects movement control. Higher values allow faster changes in direction.")]
-    public float groundFriction = 8f;
-    [Tooltip("Should brakingFriction be used to slow the character? ")]
-    public bool useBrakingFriction;
-    [Tooltip("Friction coefficient applied when braking (when there is no input acceleration).")]
-    public float brakingFriction = 8f;
-    [Tooltip("Friction coefficient applied when 'not grounded'.")]
-    public float airFriction;
-    [Tooltip("When not grounded, the amount of lateral movement control available to the character.\n0 - no control, 1 - full control."), Range(0, 1)]
-    public float airControl = 0.2f;
+    [Tooltip("Maximum movement speed in m/s")] public float speed = 5.0f;
+    [Tooltip("Maximum turning speed in deg/s")] public float angularSpeed = 540.0f;
+    [Tooltip("The rate of change of velocity")] public float acceleration = 50.0f;
+    [Tooltip("The rate at which the character's slows down")] public float deceleration = 20.0f;
+    [Tooltip("Affects movement control, higher values allow faster changes in direction")] public float groundFriction = 8f;
+    [Tooltip("Should brakingFriction be used to slow the character? ")] public bool useBrakingFriction;
+    [Tooltip("Friction applied when braking")] public float brakingFriction = 8f;
+    [Tooltip("Friction applied when in the air")] public float airFriction;
+    [Tooltip("The amount of control available to the player in the air"), Range(0, 1)] public float airControl = 0.2f;
 
     [Header("Crouch")]
-    [Tooltip("Can the character crouch")]
-    public bool canCrouch = true;
-    [Tooltip("The character's capsule height while standing.")]
-    public float standingHeight = 2.0f;
-    [Tooltip("The character's capsule height while crouching.")]
-    public float crouchingHeight = 1.0f;
+    [Tooltip("The character's capsule height while standing.")] public float standingHeight = 2.0f;
+    [Tooltip("The character's capsule height while crouching.")] public float crouchingHeight = 1.0f;
 
     [Header("Jump")]
-    [Tooltip("The initial jump height (in meters).")]
-    public float baseJumpHeight = 1.5f;
-    [Tooltip("The extra jump time (e.g. holding jump button) in seconds.")]
-    public float extraJumpTime = 0.5f;
-    [Tooltip("Acceleration while jump button is held down, given in meters / sec^2.")]
-    public float extraJumpPower = 25.0f;
-    [Tooltip("How early before hitting the ground you can press jump, and still perform the jump.")]
-    public float jumpPreGroundedToleranceTime = 0.15f;
-    [Tooltip("How long after leaving the ground you can press jump, and still perform the jump.")]
-    public float jumpPostGroundedToleranceTime = 0.15f;
-    [Tooltip("Maximum mid-air jumps")]
-    public float maxMidAirJumps = 1;
+    [Tooltip("The initial jump height in meters")] public float baseJumpHeight = 1.5f;
+    [Tooltip("The extra jump time in seconds")] public float extraJumpTime = 1f;
+    [Tooltip("Acceleration while jump button is held down, given in meters / sec^2")] public float extraJumpPower = 25.0f;
+    [Tooltip("How early before hitting the ground you can press jump again")] public float jumpPreGroundedToleranceTime = 0.15f;
+    [Tooltip("How long after leaving the ground you can press jump again")] public float jumpPostGroundedToleranceTime = 0.15f;
+    [Tooltip("Maximum mid-air jumps")] public float maxMidAirJumps = 1;
 
     [Header("First Person")]
-    [Tooltip("Speed when moving forward.")]
-    public float forwardSpeed = 5.0f;
-    [Tooltip("Speed when moving backwards.")]
-    public float backwardSpeed = 3.0f;
-    [Tooltip("Speed when moving sideways.")]
-    public float strafeSpeed = 4.0f;
-    [Tooltip("Speed multiplier while running.")]
-    public float runSpeedMultiplier = 2.0f;
+    [Tooltip("Speed when moving forward")] public float forwardSpeed = 5.0f;
+    [Tooltip("Speed when moving backwards")] public float backwardSpeed = 3.0f;
+    [Tooltip("Speed when moving sideways")] public float strafeSpeed = 4.0f;
+    [Tooltip("Speed multiplier while running")] public float runSpeedMultiplier = 2.0f;
 
     [Header("Headbob")]
-    public Animator cameraAnimator;
+    [Tooltip("The animator responsible for headbobbing")] public Animator cameraAnimator;
+    [Tooltip("The speed the animation plays")] public float cameraAnimSpeed = 1.0f;
 
-    public float cameraAnimSpeed = 1.0f;
+    [HideInInspector] public bool canJump = true;
+    [HideInInspector] public bool jump;
+    [HideInInspector] public bool isJumping;
 
-    public bool canJump = true;
-    public bool jump;
-    public bool isJumping;
+    [HideInInspector] public bool updateJumpTimer;
+    [HideInInspector] public float jumpTimer;
+    [HideInInspector] public float jumpButtonHeldDownTimer;
+    [HideInInspector] public float jumpUngroundedTimer;
 
-    public bool updateJumpTimer;
-    public float jumpTimer;
-    public float jumpButtonHeldDownTimer;
-    public float jumpUngroundedTimer;
+    [HideInInspector] public int midAirJumpCount;
 
-    public int midAirJumpCount;
+    [HideInInspector] public bool allowVerticalMovement;
+    [HideInInspector] public bool restoreVelocityOnResume = true;
 
-    public bool allowVerticalMovement;
-    public bool restoreVelocityOnResume = true;
+    [HideInInspector] public CharacterMovement movement;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public Transform cameraPivotTransform;
+    [HideInInspector] public Transform cameraTransform;
+    [HideInInspector] public MouseLook mouseLook;
 
-    public CharacterMovement movement;
-    public Animator animator;
-    public Transform cameraPivotTransform;
-    public Transform cameraTransform;
-    public MouseLook mouseLook;
+    [HideInInspector] public bool isFalling { get { return !movement.groundDetection.groundHit.isOnGround && movement.velocity.y < 0.0001f; } }
+    [HideInInspector] public Vector3 moveDirection;
+    [HideInInspector] public Vector3 oldMoveDirection;
 
-    public bool isFalling { get { return !movement.groundDetection.groundHit.isOnGround && movement.velocity.y < 0.0001f; } }
-    public Vector3 moveDirection;
-    public Vector3 oldMoveDirection;
+    [HideInInspector] public bool pause;
+    [HideInInspector] public bool isPaused;
+    [HideInInspector] public bool crouch;
+    [HideInInspector] public bool isCrouching;
 
-    public bool pause;
-    public bool isPaused;
-    public bool crouch;
-    public bool isCrouching;
-
-    private int _verticalParamId;
-    private int _horizontalParamId;
+    [HideInInspector] private int _verticalParamId;
+    [HideInInspector] private int _horizontalParamId;
 
     void Pause()
     {
         if (pause && !isPaused)
         {
-            GameManager.instance.WalkingAudio.Stop();
-
             movement.Pause(true);
             isPaused = true;
 
@@ -184,13 +161,8 @@ public class CharacterController : MonoBehaviour
 
         if (oldMoveDirection != moveDirection)
         {
-            if (moveDirection == Vector3.zero) { GameManager.instance.WalkingAudio.Stop(); }
-            else if (!isJumping && !pause) { GameManager.instance.WalkingAudio.Play(); }
-
             oldMoveDirection = moveDirection;
         }
-
-        if (isJumping == true || pause) GameManager.instance.WalkingAudio.Stop();
     }
 
     float GetTargetSpeed()

@@ -17,12 +17,6 @@ public class Interaction : MonoBehaviour
     [Space]
 
     public float interactionDst = 4;
-    public TextMeshProUGUI InteractText;
-
-    [Space]
-
-    public GameObject InteractableCube;
-    public GameObject Highlight;
 
     [Space]
 
@@ -41,9 +35,6 @@ public class Interaction : MonoBehaviour
     {
         cam = FindObjectOfType<Camera>();
 
-        Highlight.SetActive(false);
-        InteractText.text = "";
-
         BlockProgress.fillAmount = 0;
     }
 
@@ -54,8 +45,6 @@ public class Interaction : MonoBehaviour
 
         if (!GameManager.paused)
         {
-            #region Blocks Interacting
-
             RaycastHit hitInfo;
             Vector3 point = new Vector3();
 
@@ -69,7 +58,7 @@ public class Interaction : MonoBehaviour
                     int chunkPosX = Mathf.FloorToInt(point.x / 16f);
                     int chunkPosZ = Mathf.FloorToInt(point.z / 16f);
 
-                    TerrainChunk chunk = TerrainGenerator.terrainChunkDictionary[new Vector2Int(chunkPosX, chunkPosZ)];
+                    TerrainChunk chunk = TerrainGenerator.Chunks[new Vector2Int(chunkPosX, chunkPosZ)];
 
                     int bix = Mathf.FloorToInt(point.x) - (chunkPosX * 16) + 1;
                     int biy = Mathf.FloorToInt(point.y);
@@ -82,8 +71,8 @@ public class Interaction : MonoBehaviour
                         breaking = false;
 
                         StartCoroutine(IWaitBlock());
-                        StartCoroutine(IBreakBlock(Block.blocks[chunk.heightMap[bix, biy, biz]], lookingBlock, new Vector3Int(bix + (chunkPosX * 16), biy, biz + (chunkPosZ * 16))
-                            , chunk, hitInfo.point));
+                        StartCoroutine(IBreakBlock(Block.blocks[chunk.heightMap[bix, biy, biz]], lookingBlock, new Vector3Int(Mathf.FloorToInt(point.x), biy, 
+                            Mathf.FloorToInt(point.z)), new Vector2Int(chunkPosX, chunkPosZ), bix, biz, hitInfo.point));
                     }
                     else if (rightClick)
                     {
@@ -99,14 +88,11 @@ public class Interaction : MonoBehaviour
 
                         if (chunk.heightMap[dlix, diy, dliz] != BlockType.Air) interactableBlock = Block.blocks[chunk.heightMap[dlix, diy, dliz]].isInteractable;
 
-                        if (interactableBlock)
-                        {
-                            Block.blocks[chunk.heightMap[dlix, diy, dliz]].actionOnUse(new Vector3Int(dix, diy, diz));
-                        }
+                        if (interactableBlock) Block.blocks[chunk.heightMap[dlix, diy, dliz]].actionOnUse(new Vector3Int(dix, diy, diz));
                         else if (Inventory.Slots[Inventory.activeHotbar].Quantity > 0 && allowBlockBreak)
                         {
                             StartCoroutine(IWaitBlock());
-                            SavingManager.ActiveSave.Chunks[new Vector2Int(chunkPosX, chunkPosZ)][bix, biy, biz] = Inventory.Slots[Inventory.activeHotbar].Item.blockReference;
+                            //SavingManager.ActiveSave.Chunks[new Vector2Int(chunkPosX, chunkPosZ)][bix, biy, biz] = Inventory.Slots[Inventory.activeHotbar].Item.blockReference;
 
                             chunk.heightMap[bix, biy, biz] = Inventory.Slots[Inventory.activeHotbar].Item.blockReference;
                             chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
@@ -121,48 +107,22 @@ public class Interaction : MonoBehaviour
                     }
                 }
             }
-
-            #endregion
-            #region Item Interacting
-
-            Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            RaycastHit hit;
-
-            bool successfulHit = false;
-
-            if (Physics.Raycast(ray, out hit, interactionDst))
-            {
-                Interactable interactable = hit.transform.GetComponent<Interactable>();
-
-                if (interactable != null)
-                {
-                    InteractText.text = "Pickup " + hit.transform.name;
-                    successfulHit = true;
-
-                    if (Input.GetKeyDown(KeyCode.E))
-                    {
-                        Inventory.AddItem(interactable.Item, interactable.count);
-                        Destroy(hit.transform.gameObject);
-                    }
-                }
-            }
-
-            if (!successfulHit)
-            {
-                InteractText.text = "";
-            }
-
-            #endregion
         }
     }
 
-    IEnumerator IBreakBlock(Block block, Vector3Int blockPos, Vector3Int globalBlockPos, TerrainChunk chunk, Vector3 hitInfo)
+    IEnumerator IBreakBlock(Block block, Vector3Int blockPos, Vector3Int globalBlockPos, Vector2Int chunk, int bix, int biy, Vector3 hitInfo)
     {
         breakingBlock = blockPos;
         int maxIters = Mathf.RoundToInt(block.time * 30);
 
         breaking = true;
-        Cursor.gameObject.SetActive(false);
+        BlockProgress.fillAmount = 0;
+
+        LeanTween.alpha(Cursor.gameObject, 0f, 0.2f);
+        LeanTween.scale(Cursor.gameObject, Vector3.zero, 0.2f);
+
+        LeanTween.alpha(BlockProgress.gameObject, 1f, 0.2f);
+        LeanTween.scale(BlockProgress.gameObject, Vector3.one, 0.2f);
 
         for (int i = 0; i < maxIters; i++)
         {
@@ -172,32 +132,59 @@ public class Interaction : MonoBehaviour
             yield return new WaitForSeconds(0.03f);
         }
 
-        Cursor.gameObject.SetActive(true);
         breaking = false;
-
         BlockProgress.fillAmount = 0;
+
+        LeanTween.alpha(Cursor.gameObject, 1f, 0.2f);
+        LeanTween.scale(Cursor.gameObject, Vector3.one, 0.2f);
+
+        LeanTween.alpha(BlockProgress.gameObject, 0f, 0.2f);
+        LeanTween.scale(BlockProgress.gameObject, Vector3.zero, 0.2f);
 
         if (maxIters > 0)
         {
-            Inventory.AddItem(Block.blocks[chunk.heightMap[blockPos.x, blockPos.y, blockPos.z]], 1);
+            Inventory.AddItem(Block.blocks[TerrainGenerator.Chunks[chunk].heightMap[blockPos.x, blockPos.y, blockPos.z]], 1);
 
-            /*
-            Block oldBlock = Block.blocks[chunk.blocks[blockPos.x, blockPos.y, blockPos.z]];
-            GameObject item = Instantiate(InteractableCube);
+            TerrainGenerator.Chunks[chunk].heightMap[blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
+            TerrainGenerator.Chunks[chunk].lodMeshes[TerrainGenerator.Chunks[chunk].previousLODIndex].
+                RequestMesh(TerrainGenerator.Chunks[chunk].heightMap, TerrainGenerator.Chunks[chunk].coord);
 
-            if (oldBlock.actionOnDestroy != null) oldBlock.actionOnDestroy(globalBlockPos);
+            //SavingManager.ActiveSave.Chunks[TerrainGenerator.Chunks[chunk].coord][blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
+            AudioManager.instance.GrabItem.Play();
 
-            item.transform.position = new Vector3(hitInfo.x, hitInfo.y + 1, hitInfo.z);
-            item.transform.name = item.GetInstanceID().ToString();
+            if (bix == 1)
+            {
+                Vector2Int sideChunk = new Vector2Int(chunk.x - 1, chunk.y);
 
-            item.GetComponent<MeshRenderer>().material.color = oldBlock.ItemColor;
-            item.AddComponent<Interactable>().Item = oldBlock;
-            */
-            chunk.heightMap[blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
-            chunk.lodMeshes[chunk.previousLODIndex].RequestMesh(chunk.heightMap, chunk.coord);
+                TerrainGenerator.Chunks[sideChunk].heightMap[17, blockPos.y, blockPos.z] = BlockType.Air;
+                TerrainGenerator.Chunks[sideChunk].lodMeshes[TerrainGenerator.Chunks[sideChunk].previousLODIndex].
+                    RequestMesh(TerrainGenerator.Chunks[sideChunk].heightMap, TerrainGenerator.Chunks[sideChunk].coord);
+            }
+            else if (bix == 16)
+            {
+                Vector2Int sideChunk = new Vector2Int(chunk.x + 1, chunk.y);
 
-            SavingManager.ActiveSave.Chunks[chunk.coord][blockPos.x, blockPos.y, blockPos.z] = BlockType.Air;
+                TerrainGenerator.Chunks[sideChunk].heightMap[0, blockPos.y, blockPos.z] = BlockType.Air;
+                TerrainGenerator.Chunks[sideChunk].lodMeshes[TerrainGenerator.Chunks[sideChunk].previousLODIndex].
+                    RequestMesh(TerrainGenerator.Chunks[sideChunk].heightMap, TerrainGenerator.Chunks[sideChunk].coord);
+            }
 
+            if (biy == 1)
+            {
+                Vector2Int sideChunk = new Vector2Int(chunk.x, chunk.y - 1);
+
+                TerrainGenerator.Chunks[sideChunk].heightMap[blockPos.x, blockPos.y, 17] = BlockType.Air;
+                TerrainGenerator.Chunks[sideChunk].lodMeshes[TerrainGenerator.Chunks[sideChunk].previousLODIndex].
+                    RequestMesh(TerrainGenerator.Chunks[sideChunk].heightMap, TerrainGenerator.Chunks[sideChunk].coord);
+            }
+            else if (biy == 16)
+            {
+                Vector2Int sideChunk = new Vector2Int(chunk.x, chunk.y + 1);
+
+                TerrainGenerator.Chunks[sideChunk].heightMap[blockPos.x, blockPos.y, 0] = BlockType.Air;
+                TerrainGenerator.Chunks[sideChunk].lodMeshes[TerrainGenerator.Chunks[sideChunk].previousLODIndex].
+                    RequestMesh(TerrainGenerator.Chunks[sideChunk].heightMap, TerrainGenerator.Chunks[sideChunk].coord);
+            }
         }
     }
 

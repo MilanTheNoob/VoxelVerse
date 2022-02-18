@@ -1,7 +1,9 @@
-﻿using ECM.Common;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// An important part of Character Movement responsible for the lower level part of moving the player
+/// </summary>
 public class CharacterMovement : MonoBehaviour
 {
     #region Singleton
@@ -9,10 +11,9 @@ public class CharacterMovement : MonoBehaviour
     void Awake() { instance = this; }
     #endregion
 
-    [Tooltip("The maximum lateral speed this character can move")]
-    public float maxLateralSpeed = 10.0f;
-    [Tooltip("The gravity applied to this character.")]
-    public Vector3 gravity = new Vector3(0, -20f, 0);
+    [Header("Basic Settings")]
+    [Tooltip("The maximum lateral speed this character can move")] public float maxLateralSpeed = 10.0f;
+    [Tooltip("The gravity applied to this character.")] public Vector3 gravity = new Vector3(0, -20f, 0);
 
     static readonly Collider[] OverlappedColliders = new Collider[8];
     Coroutine _lateFixedUpdateCoroutine;
@@ -26,7 +27,6 @@ public class CharacterMovement : MonoBehaviour
 
     Vector3 _savedVelocity;
     Vector3 _savedAngularVelocity;
-    Vector3 lerpVel;
 
     bool useGravity = true;
     bool isGod;
@@ -396,7 +396,7 @@ public class CharacterMovement : MonoBehaviour
 
     void Step()
     {
-        const float raycastDst = 0.8f;
+        const float raycastDst = 0.9f;
 
         Vector3 forwardTD = transform.TransformDirection(Vector3.forward);
         Vector3 backwardTD = transform.TransformDirection(Vector3.back);
@@ -460,9 +460,9 @@ public class CharacterMovement : MonoBehaviour
 
         useGravity = false;
         cachedRigidbody.velocity += new Vector3(0, stepSize, 0);
-        cachedRigidbody.velocity += transform.forward;
+        cachedRigidbody.velocity += transform.forward * 2;
 
-        yield return new WaitForSeconds(0.12f);
+        yield return new WaitForSeconds(0.1f);
 
         cachedRigidbody.isKinematic = false;
         cachedRigidbody.velocity = transform.forward;

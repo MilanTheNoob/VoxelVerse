@@ -14,33 +14,24 @@ public class CraftUI : MonoBehaviour
 
     Craft craft;
 
-    void Start() { GetComponent<Button>().onClick.AddListener(Craft); }  
-
-    void Craft()
-    {
-        Crafting.CraftItems(craft);
-    }
+    void Start() { GetComponent<Button>().onClick.AddListener(Craft); }
+    void Craft() { Crafting.CraftItems(craft); }
 
     public void DisplayItems(Craft craft)
     {
         this.craft = craft;
 
-        for (int i = 0; i < craft.Input.Length; i++)
-        {
-            CraftUIItem inputG = Instantiate(CraftingItem, InputsHolder.transform).GetComponent<CraftUIItem>();
-            inputG.ItemColorImg.color = Block.blocks[craft.Input[i].Item].ItemColor;
+        for (int i = 0; i < craft.Input.Length; i++) { RenderItem(craft.Input[i], InputsHolder); }
+        for (int i = 0; i < craft.Output.Length; i++) { RenderItem(craft.Output[i], OutputsHolder); }
+    }
 
-            inputG.QuantityText.text = craft.Input[i].Count.ToString();
-            inputG.NameText.text = craft.Input[i].Item.ToString();
-        }
+    void RenderItem(CraftItem item, GameObject holder)
+    {
+        CraftUIItem itemG = Instantiate(CraftingItem, holder.transform).GetComponent<CraftUIItem>();
+        Debug.Log(item.Item.ToString());
+        itemG.ItemColorImg.color = Block.blocks[item.Item].ItemColor;
 
-        for (int i = 0; i < craft.Output.Length; i++)
-        {
-            CraftUIItem outputG = Instantiate(CraftingItem, OutputsHolder.transform).GetComponent<CraftUIItem>();
-            outputG.ItemColorImg.color = Block.blocks[craft.Output[i].Item].ItemColor;
-
-            outputG.QuantityText.text = craft.Output[i].Count.ToString();
-            outputG.NameText.text = craft.Output[i].Item.ToString();
-        }
+        itemG.QuantityText.text = item.Count.ToString();
+        itemG.NameText.text = item.Item.ToString();
     }
 }

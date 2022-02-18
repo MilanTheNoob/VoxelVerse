@@ -1,28 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 
+/// <summary>
+/// Deals with almost all features in the flat world allowing me to create structures in the game
+/// </summary>
 public class FlatWorldManager : MonoBehaviour
 {
     public static BlockType CurrentBlock;
     public static bool paused;
 
-    public RectTransform ItemsPanel;
-    public GameObject ItemsHolder;
+    [Header("The UI menu displaying all the available blocks to build with")] public RectTransform ItemsPanel;
+    [Header("The UI object that holds all the buttons for their respective blocks")] public GameObject ItemsHolder;
 
-    [Space]
-
-    public TMP_FontAsset MainFont;
-    public Sprite CircleSprite;
-    public Sprite PanelSprite;
+    [Space, Header("The font to display the name of the items")] public TMP_FontAsset MainFont;
+    [Header("The plain circular sprite to display the color of the block")] public Sprite CircleSprite;
+    [Header("The sprite of the background of the button")] public Sprite PanelSprite;
 
 
-    [Space]
-
-    public CharacterController Player;
+    [Space, Header("The main player object in the flat world")] public CharacterController Player;
 
     void Start()
     {

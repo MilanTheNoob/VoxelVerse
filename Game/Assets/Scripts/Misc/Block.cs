@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// The most important class in the game, the block
+/// Responsible for storing and returning values of all blocks in the game
+/// </summary>
 public class Block
 {
     const float sourceRes = 256;
@@ -41,6 +45,10 @@ public class Block
 
     public Vector2[] GetUVs() { return uvs; }
 
+    /// <summary>
+    /// An all important dictionary that will return all necessary information about every block in the game (except 'Air')
+    /// Including actions for interactable blocks such as Barrels
+    /// </summary>
     public static Dictionary<BlockType, Block> blocks = new Dictionary<BlockType, Block>()
     {
         { BlockType.Grass, new Block(16, 8, BlockType.Grass, 0.5f, new Color32(53, 122, 27, 255), 8) },
@@ -95,6 +103,11 @@ public class Block
     #endregion
 }
 
+/// <summary>
+/// An enum to reference any block you want
+/// WARNING : Do not interfere with the order they are listed! Doing so will cause major problems!
+/// ONLY ADD NEW ONES AT THE END IN ORDER OR SPECIFY THE NUMBER CORRELATING TO THE ITEM
+/// </summary>
 public enum BlockType 
 { 
     Air = 0, Spacer,

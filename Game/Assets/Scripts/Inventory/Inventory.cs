@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
+/// <summary>
+/// Deals with everything related to the player's inventory
+/// </summary>
 public class Inventory : MonoBehaviour
 {
     public static Inventory instance;
-
     public static List<InventorySlot> Slots = new List<InventorySlot>();
-
-    public GridLayoutGroup GridLayout;
 
     public InventorySlotUIController[] InvSlots;
     public InventorySlotUIController[] HotbarSlots;
@@ -41,7 +40,7 @@ public class Inventory : MonoBehaviour
             if (Input.GetMouseButton(1))
             {
                 RaycastHit hitInfo;
-                Vector3 point = new Vector3();
+                Vector3 point;
 
                 if (Physics.Raycast(transform.position, transform.forward, out hitInfo, 4, Interaction.instance.groundLayer))
                 {
@@ -50,7 +49,7 @@ public class Inventory : MonoBehaviour
                     int chunkPosX = Mathf.FloorToInt(point.x / 16f);
                     int chunkPosZ = Mathf.FloorToInt(point.z / 16f);
 
-                    TerrainChunk chunk = TerrainGenerator.terrainChunkDictionary[new Vector2Int(chunkPosX, chunkPosZ)];
+                    TerrainChunk chunk = TerrainGenerator.Chunks[new Vector2Int(chunkPosX, chunkPosZ)];
 
                     int bix = Mathf.FloorToInt(point.x) - chunkPosX + 1;
                     int biy = Mathf.FloorToInt(point.y);
@@ -66,6 +65,9 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the hotbar of the first 4 items and their quantities from the inventory
+    /// </summary>
     void UpdateHotbar()
     {
         for (int i = 0; i < HotbarSlots.Length; i++)
@@ -75,6 +77,12 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds an item in the wanted quantity and updates the UI and all other relevant features by invoking callbacks
+    /// </summary>
+    /// <param name="item">The item / block to add to the inventory</param>
+    /// <param name="quantity">The quantity of the item</param>
+    /// <returns></returns>
     public static bool AddItem(Block item, int quantity = 1)
     {
         if (item == null) return false;

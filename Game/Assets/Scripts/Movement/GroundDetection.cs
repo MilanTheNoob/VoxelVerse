@@ -3,18 +3,11 @@
 [RequireComponent(typeof(CapsuleCollider))]
 public class GroundDetection : MonoBehaviour
 {
-    [Tooltip("Layers to be considered as 'ground' (walkables).")]
-    public LayerMask groundMask = 1;
-    [Tooltip("The maximum angle (in degrees) that will be accounted as 'ground'.")]
-    public float groundLimit = 60.0f;
-    [Tooltip("The maximum height (in meters) for a valid step.")]
-    public float stepOffset = 0.5f;
-    [Tooltip("The maximum horizontal distance (in meters) a character can stand on a ledge without slide down.")]
-    public float ledgeOffset;
-    [Tooltip("Determines the maximum length of the cast.")]
-    public float castDistance = 0.5f;
-    [Tooltip("Should Triggers be considered as 'ground'?")]
-    public QueryTriggerInteraction _triggerInteraction = QueryTriggerInteraction.Ignore;
+    [Tooltip("Layers to be considered as the ground")] public LayerMask groundMask = 1;
+    [Tooltip("The maximum height (in meters) for a valid step.")] public float stepOffset = 0.5f;
+    [Tooltip("The maximum horizontal distance (in meters) a character can stand on a ledge without slide down.")] public float ledgeOffset;
+    [Tooltip("Determines the maximum length of the cast.")] public float castDistance = 0.5f;
+    [Tooltip("Should Triggers be considered as 'ground'?")] public QueryTriggerInteraction _triggerInteraction = QueryTriggerInteraction.Ignore;
 
     static readonly Collider[] OverlappedColliders = new Collider[16];
 
@@ -119,7 +112,7 @@ public class GroundDetection : MonoBehaviour
             DetectLedgeAndSteps(position, rotation, distance, hitInfo.point, hitInfo.normal);
 
             groundHit.isOnGround = true;
-            groundHit.isValidGround = !groundHit.isOnLedgeEmptySide && Vector3.Angle(groundHit.surfaceNormal, up) < groundLimit;
+            groundHit.isValidGround = !groundHit.isOnLedgeEmptySide && Vector3.Angle(groundHit.surfaceNormal, up) < 60;
 
             return true;
         }
@@ -130,7 +123,7 @@ public class GroundDetection : MonoBehaviour
         groundHit.surfaceNormal = hitInfo.normal;
 
         groundHit.isOnGround = true;
-        groundHit.isValidGround = Vector3.Angle(groundHit.surfaceNormal, /*Vector3.up*/up) < groundLimit;
+        groundHit.isValidGround = Vector3.Angle(groundHit.surfaceNormal, /*Vector3.up*/up) < 60;
 
         return true;
     }
@@ -188,7 +181,7 @@ public class GroundDetection : MonoBehaviour
         DetectLedgeAndSteps(p, q, castDistance, hitInfo.point, hitInfo.normal);
 
         groundHit.isOnGround = true;
-        groundHit.isValidGround = !groundHit.isOnLedgeEmptySide && Vector3.Angle(groundHit.surfaceNormal, /*Vector3.up*/up) < groundLimit;
+        groundHit.isValidGround = !groundHit.isOnLedgeEmptySide && Vector3.Angle(groundHit.surfaceNormal, /*Vector3.up*/up) < 60;
 
         return groundHit.isOnGround && groundHit.isValidGround;
     }
@@ -205,11 +198,11 @@ public class GroundDetection : MonoBehaviour
 
         RaycastHit nearHitInfo;
         var nearHit = Raycast(nearPoint, down, out nearHitInfo, ledgeStepDistance);
-        var isNearGroundValid = nearHit && Vector3.Angle(nearHitInfo.normal, up) < groundLimit;
+        var isNearGroundValid = nearHit && Vector3.Angle(nearHitInfo.normal, up) < 60;
 
         RaycastHit farHitInfo;
         var farHit = Raycast(farPoint, down, out farHitInfo, ledgeStepDistance);
-        var isFarGroundValid = farHit && Vector3.Angle(farHitInfo.normal, up) < groundLimit;
+        var isFarGroundValid = farHit && Vector3.Angle(farHitInfo.normal, up) < 60;
 
         if (farHit && !isFarGroundValid)
         {
